@@ -9,7 +9,7 @@ from netbox.api.serializers import NetBoxModelSerializer
 from tenancy.api.serializers import TenantSerializer
 from utilities.api import get_serializer_for_model
 from ..choices import VOICE_CIRCUIT_ASSIGNMENT_MODELS
-from ..models import VoiceCircuit, Pool
+from ..models import VoiceCircuit, Pool, Number
 
 
 class PoolSerializer(NetBoxModelSerializer):
@@ -64,3 +64,17 @@ class VoiceCircuitSerializer(NetBoxModelSerializer):
             "sip_source", "sip_target", "provider", "tags",
         )
         brief_fields = ("id", "url", "name", "display")
+
+
+class NumberSerializer(NetBoxModelSerializer):
+    pool = serializers.PrimaryKeyRelatedField(
+        queryset=Pool.objects.all(),
+        required=False,
+        allow_null=True
+    )
+    class Meta:
+        model = Number
+        fields = (
+            "id", "description", 'pool'
+        )
+        brief_fields = ("id")

@@ -1,7 +1,7 @@
 import django_tables2 as tables
 
 from netbox.tables import BaseTable, columns
-from .models import VoiceCircuit, Pool
+from .models import VoiceCircuit, Pool, Number
 
 ToggleColumn = columns.ToggleColumn
 
@@ -46,3 +46,29 @@ class VoiceCircuitTable(BaseTable):
         model = VoiceCircuit
         fields = ('pk', 'name', 'voice_device_or_vm', 'voice_circuit_type', 'tenant', 'region', 'site', 'provider',
                   'tags')
+
+
+class NumberTable(BaseTable):
+    pk = ToggleColumn()
+    name = tables.LinkColumn()
+    description = tables.LinkColumn()
+    pool = tables.LinkColumn()
+    
+    tenant = tables.Column(
+        accessor='pool.tenant',
+        linkify=True,
+        verbose_name='Tenant',
+        order_by=('pool__tenant__name',),
+    )
+
+    site = tables.Column(
+        accessor='pool.site',
+        linkify=True,
+        verbose_name='Site',
+        order_by=('pool__site__name',),
+    )
+
+
+    class Meta(BaseTable.Meta):
+        model = Number
+        fields = ('pk', 'name', 'description', 'pool', 'tenant', 'site')

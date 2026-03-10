@@ -1,0 +1,13 @@
+{% extends 'generic/object.html' %}
+{% load i18n %}
+
+{% block content %}
+  <div class="card">
+    <h2 class="card-header">
+      {% trans "Numbers" %} <span class="text-muted">({{ object.numbers.count }})</span>
+    </h2>
+    {# Reuse your Number list table, filtered by this pool #}
+    {# If your FilterSet uses pool_id, use pool_id=object.pk; otherwise pool=object.pk #}
+    {% htmx_table 'plugins:netbox_phonenum:number_list' pool_id=object.pk %}
+  </div>
+{% endblock %}
