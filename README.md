@@ -1,21 +1,22 @@
-# voipbox Plugin
-> this plugins forked and compatible with phonebox_plugin 
+# Netbox_Phonenum Plugin
+A Telephone Number Management Plugin for [NetBox](https://github.com/netbox-community/netbox).
 
-A Telephone Number Management Plugin for [NetBox](https://github.com/netbox-community/netbox) and more.
+> This plugin was forked from (and extends) the netbox_phonenum project:
+> https://github.com/panaceya/netbox_phonenum
+> (which, in turn was forked from the original phonebox_plugin:
+> https://gitub.com/iDebugAll/phonebox_plugin)
+> Compared to voipbox, this project extends the pools objects to also contain non-pool 'Number' objects.
 
 ## Compatibility
 
-| NetBox Version | VoipBox Plugin Version |
-|:--------------:|:----------------------:|
-|  4.3.0-4.3.2   |     0.0.3              |
-|  4.3.0-4.3.3   |     0.0.4              |
-|  4.3.0-4.3.7   |     0.0.5              |
-|  4.3.0-4.5.0   |     0.0.6              |
-|  4.3.0-4.5.0   |     0.0.7              |
-|  4.4.X-4.5.X   |     0.0.8, 0.0.9       |
-
-
-## Configuration
+| NetBox Version | VoipBox Plugin Version | Netbox_phonenum Version |
+|:--------------:|:----------------------:|:-----------------------:|
+|  4.3.0-4.3.2   |     0.0.3              |                         |
+|  4.3.0-4.3.3   |     0.0.4              |                         |
+|  4.3.0-4.3.7   |     0.0.5              |                         |
+|  4.3.0-4.5.0   |     0.0.6              |                         |
+|  4.3.0-4.5.0   |     0.0.7              |                         |
+|  4.4.X-4.5.X   |     0.0.8, 0.0.9       |      0.0.10             |
 
 
 ### Preview
@@ -25,25 +26,33 @@ A Telephone Number Management Plugin for [NetBox](https://github.com/netbox-comm
 
 # Supported Features and Models
 
+
 ### Pool 
- 
-The plugin currently implements a Pool numbers abstraction representing a single telephone number of an arbitrary format.<br/>
-A Pool numbers can consist of valid DTMF characters and leading plus sign for E.164 support:
+
+A 'Pool' represents a range of numbers, defined by inclusive 'start' and 'end' values for that range.
+- Pools may be nested (i.e. pools can contain other pools).
+- Pools may also contain 'Number' objects (described below).
+- Child pool ranges must lie within the parent pool range.
+- Pool ranges can not overlap with sibling pools under the same parent.
+- Pools can can also represent a single number, if desired, by setting the 'start' and 'end value' to the same number. (This was the recommended approach for storing single numbers within the voipbox plugin.)
+- Pool 'start' and 'end' values can consist of valid DTMF characters and leading plus sign for E.164 support:
   - leading plus ("+") sign (optional)
   - digits 0-9
   - characters A, B, C, D
   - pound sign ("#")
   - asterisk sign ("*")
-
-Sample valid numbers: +12341234567, 1000, 123#2341234567, *100#.<br/>
-Numbers are stored without delimiters. They will be implemented as an additional formatting function.<br/>
+- Pool 'start' and 'end' range numbers are stored without delimiters.
 Number values can be not unique.
-Tenant is a mandatory option representing a number partition. Number and Tenant are globally unique.<br/>
-A Number can optionally be assigned with Provider and Region relations.<br/>
-A Number can contain an optional Description.<br/>
-A Number can optionally be tagged with Tags.<br/>
-<br/>
-The plugin supports Bulk Edit and Delete operations for Numbers.
+- A Pool can optionally be assigned Tenant, Site, Provider, and Region relationships.
+- A Pool can contain an optional Description.
+- A Pool can optionally be tagged with Tags.
+- The plugin supports Bulk Edit and Delete operations for Pools.
+
+### Numbers
+A 'Number' is intended to represent a single phone number entry within a pool.
+Numbers have the same formatting options and restrictions as pools, described above.
+
+> Sample valid numbers/pool range delimeters: +12341234567, 1000, 123#2341234567, *100#.
 
 ### Voice Circuits
 
@@ -58,12 +67,11 @@ A Voice Circuit must be assigned to an interface of a Device or Virtual Machine.
 ### Plugin API
 
 The plugin introduces a NetBox REST API extension `/api/plugins/voipbox/`.<br/>
-It currently supports all create, read, update, and delete operations for Numbers via `/api/plugins/voipbox/numbers/`.<br/>
+It supports all create, read, update, and delete operations for Numbers or Pools via `/api/plugins/netbox_phonenum/pools/` and '/api/plugins/netbox_phonenum/numbers/'.<br/>
 The API is compatible with [pynetbox](https://github.com/digitalocean/pynetbox):
 ```
 >>> nb.plugins.voipbox.pool.get(1)
 ```
-
 # Installation
 
 General installation steps and considerations follow the [official guidelines](https://netbox.readthedocs.io/en/stable/plugins/).
@@ -73,30 +81,30 @@ General installation steps and considerations follow the [official guidelines](h
 Assuming you use a Virtual Environment for Netbox:
 ```
 $ source /opt/netbox/venv/bin/activate
-(venv) $ pip3 install voipbox-plugin
+(venv) $ pip3 install netbox-phonenum
 ```
 
 ### Package Installation from Source Code
-The source code is available on [GitHub](https://github.com/panaceya/voipbox_plugin).<br/>
+The source code is available on [GitHub](https://github.com/jeremythorson/netbox_phonenum).<br/>
 Download and install the package. Assuming you use a Virtual Environment for Netbox:
 ```
-$ git clone https://github.com/panaceya/voipbox_plugin.git
-$ cd voipbox_plugin
+$ git clone https://github.com/jeremythorson/netbox_phonenum.git
+$ cd netbox_phonenum
 $ source /opt/netbox/venv/bin/activate
 (venv) $ pip3 install .
 ```
 
-To ensure NextBox UI plugin is automatically re-installed during future upgrades, create a file named `local_requirements.txt` (if not already existing) in the NetBox root directory (alongside `requirements.txt`) and list the `voipbox_plugin` package:
+To ensure NextBox UI plugin is automatically re-installed during future upgrades, create a file named `local_requirements.txt` (if not already existing) in the NetBox root directory (alongside `requirements.txt`) and list the `netbox_phonenum` package:
 
 ```no-highlight
-# echo voipbox_plugin >> local_requirements.txt
+# echo netbox_phonenum >> local_requirements.txt
 ```
 
 ### Enable the Plugin
 In a global Netbox **configuration.py** configuration file, update or add PLUGINS parameter:
 ```python
 PLUGINS = [
-    'voipbox_plugin',
+    'netbox_phonenum',
 ]
 ```
 
@@ -125,8 +133,8 @@ The Plugin may be installed in a Netbox Docker deployment.
 The package contains a Dockerfile for [Netbox-Community Docker](https://github.com/netbox-community/netbox-docker) extension. Latest-LDAP version is used by default as a source.<br/>
 Download the Plugin and build from source:
 ```
-$ git clone https://github.com/iDebugAll/voipbox_plugin
-$ cd voipbox_plugin
+$ git clone https://github.com/jeremythorson/netbox_phonenum
+$ cd netbox_phonenum
 $ docker build -t netbox-custom .
 ```
 Update a netbox image name in **docker-compose.yml** in a Netbox Community Docker project root:
