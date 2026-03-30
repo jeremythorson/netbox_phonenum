@@ -66,11 +66,11 @@ A Voice Circuit must be assigned to an interface of a Device or Virtual Machine.
 
 ### Plugin API
 
-The plugin introduces a NetBox REST API extension `/api/plugins/voipbox/`.<br/>
+The plugin introduces a NetBox REST API extension `/api/plugins/phonenum/`.<br/>
 It supports all create, read, update, and delete operations for Numbers or Pools via `/api/plugins/netbox_phonenum/pools/` and '/api/plugins/netbox_phonenum/numbers/'.<br/>
 The API is compatible with [pynetbox](https://github.com/digitalocean/pynetbox):
 ```
->>> nb.plugins.voipbox.pool.get(1)
+>>> nb.plugins.phonenum.pool.get(1)
 ```
 # Installation
 

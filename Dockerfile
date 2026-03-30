@@ -1,7 +1,7 @@
 FROM netboxcommunity/netbox:latest-ldap
 
-COPY ./voipbox_plugin /source/voipbox_plugin/voipbox_plugin/
-COPY ./setup.py /source/voipbox_plugin/
-COPY ./MANIFEST.in /source/voipbox_plugin/
-COPY ./README.md /source/voipbox_plugin/
-RUN /usr/local/bin/uv pip install --no-cache-dir /source/voipbox_plugin/
+COPY ./netbox_phonenum /source/netbox_phonenum/netbox_phonenum/
+COPY ./setup.py /source/netbox_phonenum/
+COPY ./MANIFEST.in /source/netbox_phonenum/
+COPY ./README.md /source/netbox_phonenum/
+RUN /usr/local/bin/uv pip install --no-cache-dir /source/netbox_phonenum/
