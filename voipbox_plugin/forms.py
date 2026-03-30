@@ -1,4 +1,3 @@
-import logging
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
@@ -15,10 +14,8 @@ from utilities.forms.fields import (
 from utilities.forms.rendering import FieldSet
 from virtualization.models import VirtualMachine, VMInterface
 from .choices import VoiceCircuitTypeChoices
-from .models import VoiceCircuit, Pool, Number
+from .models import VoiceCircuit, Pool
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 class AddRemoveTagsForm(forms.Form):
 
@@ -226,7 +223,7 @@ class VoiceCircuitEditForm(NetBoxModelForm):
     )
 
     class Media:
-        js = ('netbox_phonenum/js/edit_virtual_circuit.js',)
+        js = ('voipbox_plugin/js/edit_virtual_circuit.js',)
 
     class Meta:
         model = VoiceCircuit
@@ -377,117 +374,3 @@ class VoiceCircuitCSVForm(CSVModelForm):
             'description', 'provider', 'provider_circuit_id', 'device',
             'virtual_machine', 'interface',
         ]
-
-
-class NumberEditForm(NetBoxModelForm):
-
-    pool = DynamicModelChoiceField(queryset=Pool.objects.all(), required=True)
-    name = forms.CharField(
-        required=True,
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'autocomplete': 'off',
-                'title': 'Enter numer name'
-            }
-        )
-    )
-
-    description = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                'class': 'form-control',
-                'autocomplete': 'off',
-                'title': 'Enter numer desc'
-            }
-        )
-    )
-    class Media:
-        js = ('netbox_phonenum/js/edit_virtual_circuit.js',)
-
-    class Meta:
-        model = Number
-        fields = ('pool', 'name','description')
-    
-    def clean(self):
-        super().clean()
-        cleaned = self.cleaned_data or {}
-
-        pool = cleaned.get("pool") or getattr(self.instance, "pool", None)
-        name = cleaned.get("name")
-
-        if not pool or name in (None, ""):
-            return cleaned
-
-        try:
-            numeric_value = int(str(name).strip())
-        except (TypeError, ValueError):
-            self.add_error("name", "Name must be a valid integer.")
-            return cleaned
-
-        start_raw = getattr(pool, "start", None)
-        end_raw = getattr(pool, "end", None)
-        if start_raw is None or end_raw is None:
-            raise ValidationError("Selected pool has no defined start/end range.")
-
-        try:
-            start = int(str(start_raw).strip())
-            end = int(str(end_raw).strip())
-        except (TypeError, ValueError):
-            raise ValidationError(
-                f"Selected pool has non-numeric start/end values (start={start_raw!r}, end={end_raw!r})."
-            )
-
-        if start > end:
-            raise ValidationError("Selected pool has invalid range (start > end).")
-
-        if not (start <= numeric_value <= end):
-            self.add_error(
-                "name",
-                f"Number ({numeric_value}) must be within pool range {start}–{end} (inclusive)."
-            )
-
-        return cleaned
-
-class NumberCSVForm(CSVModelForm):
-    class Meta:
-        model = Number
-        fields = [
-            'name','description','pool']
-
-class NumberBulkEditForm(BulkEditForm):
-    pk = forms.ModelMultipleChoiceField(
-        queryset=Number.objects.all(),
-        widget=forms.MultipleHiddenInput()
-    )
-  
-    description = forms.CharField(
-        max_length=200,
-        required=False
-    )
-
-    class Meta:
-        nullable_fields = ('description')
-
-class NumberFilterForm(forms.Form):
-    model = Number
-    q = forms.CharField(
-        required=False,
-        label='Search'
-    )
-  
-    pool = DynamicModelMultipleChoiceField(
-        queryset=Pool.objects.all(),
-        required=False,
-        label='Pool',
-        to_field_name='id',
-        null_option='None',
-    )
-
-    tenant = DynamicModelMultipleChoiceField(
-        queryset=Tenant.objects.all(),
-        to_field_name='id',
-        required=False,
-        null_option='None',
-    )

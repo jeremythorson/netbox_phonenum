@@ -6,7 +6,7 @@ from dcim.models import Region, Site
 from extras.filters import TagFilter
 from netbox.filtersets import BaseFilterSet
 from tenancy.models import Tenant
-from .models import VoiceCircuit, Pool,Number
+from .models import VoiceCircuit, Pool
 
 
 class PoolFilterSet(BaseFilterSet):
@@ -97,56 +97,6 @@ class VoiceCircuitFilterSet(BaseFilterSet):
 
     class Meta():
         model = VoiceCircuit
-        fields = ('name',)
-
-    def search(self, queryset, name, value):
-        if not value.strip():
-            return queryset
-        return queryset.filter(
-            Q(name__icontains=value)
-        )
-
-
-class NumberFilterSet(BaseFilterSet):
-    q = django_filters.CharFilter(
-        method='search',
-        label='Search',
-    )
-    name = django_filters.ModelMultipleChoiceFilter(
-        field_name='name',
-        queryset=Number.objects.all(),
-        to_field_name='name',
-        label='name',
-    )
-    
-    pool = django_filters.ModelChoiceFilter(
-        field_name='pool',
-        queryset=Pool.objects.all(),
-        label='Pool',
-    )
-
-    tenant = django_filters.ModelChoiceFilter(
-        field_name='pool__tenant',
-        queryset=Tenant.objects.all(),
-        label='Tenant',
-    )
-
-    description = django_filters.ModelMultipleChoiceFilter(
-        queryset=Number.objects.all(),
-        field_name='description',
-        to_field_name='description',
-        label='description',
-    )
-    
-    pool_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='pool',
-        queryset=Pool.objects.all(),
-        to_field_name='id',
-        label='Pool (IDs)',
-    )
-
-    class Meta():
-        model = Number
         fields = ('name',)
 
     def search(self, queryset, name, value):

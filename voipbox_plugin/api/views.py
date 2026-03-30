@@ -3,15 +3,15 @@ from rest_framework.routers import APIRootView
 from netbox.api.viewsets import NetBoxModelViewSet
 from . import serializers
 from .. import filters
-from ..models import VoiceCircuit, Pool, Number
+from ..models import VoiceCircuit, Pool
 
 
-class phonenumPluginRootView(APIRootView):
+class voipboxPluginRootView(APIRootView):
     """
-    netbox_phonenum API root view
+    voipbox_plugin API root view
     """
     def get_view_name(self):
-        return 'phonenum'
+        return 'voipbox'
 
 class PoolViewSet(NetBoxModelViewSet):
     queryset = Pool.objects.prefetch_related('tenant', 'region', 'tags')
@@ -22,8 +22,3 @@ class VoiceCircuitsViewSet(NetBoxModelViewSet):
     queryset = VoiceCircuit.objects.prefetch_related('tenant', 'region', 'tags')
     serializer_class = serializers.VoiceCircuitSerializer
     filterset_class = filters.VoiceCircuitFilterSet
-
-class NumberViewSet(NetBoxModelViewSet):
-    queryset = Number.objects.prefetch_related('pool')
-    serializer_class = serializers.NumberSerializer
-    filterset_class = filters.NumberFilterSet

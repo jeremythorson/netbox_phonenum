@@ -83,7 +83,7 @@ class Pool(NetBoxModel):
         return f"{self.name} ({self.start}-{self.end})"
 
     def get_absolute_url(self):
-        return reverse("plugins:netbox_phonenum:pool", kwargs={"pk": self.pk})
+        return reverse("plugins:voipbox_plugin:pool", kwargs={"pk": self.pk})
 
     @property
     def is_pool(self):
@@ -204,21 +204,4 @@ class VoiceCircuit(NetBoxModel):
         return str(self.name)
 
     def get_absolute_url(self):
-        return reverse("plugins:netbox_phonenum:voicecircuit", kwargs={"pk": self.pk})
-
-
-class Number(NetBoxModel):
-    name = models.CharField(max_length=32, validators=[number_validator])
-    description = models.CharField(max_length=50)
-
-    pool = models.ForeignKey(
-        Pool,
-        on_delete=models.CASCADE,          
-        related_name='numbers'
-    )
-
-    def __str__(self):
-        return str(self.name)
-
-    def get_absolute_url(self):
-        return reverse("plugins:netbox_phonenum:number", kwargs={"pk": self.pk})
+        return reverse("plugins:voipbox_plugin:voicecircuit", kwargs={"pk": self.pk})

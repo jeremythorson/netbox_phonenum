@@ -92,10 +92,9 @@
                 <h2 class="card-header">
                 {% trans "Child Resources" %}
                 </h2>
-            {% htmx_table 'plugins:netbox_phonenum:pool_list' parent=object.pk %}
+            {% htmx_table 'plugins:voipbox_plugin:pool_list' parent=object.pk %}
             </div>
         </div>
     </div>
     {% endif %}
-    
 {% endblock content %}
