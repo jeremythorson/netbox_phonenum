@@ -1,8 +1,8 @@
 # Netbox_Phonenum Plugin
 A Telephone Number Management Plugin for [NetBox](https://github.com/netbox-community/netbox).
 
-> This plugin was forked from (and extends) the netbox_phonenum project:
-> https://github.com/panaceya/netbox_phonenum
+> This plugin was forked from (and extends) the voipbox project:
+> https://github.com/panaceya/voipbox
 > (which, in turn was forked from the original phonebox_plugin:
 > https://gitub.com/iDebugAll/phonebox_plugin)
 > Compared to voipbox, this project extends the pools objects to also contain non-pool 'Number' objects.
